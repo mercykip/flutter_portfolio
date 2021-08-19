@@ -1,8 +1,10 @@
-# portfolio
+# Add your medium blogs to your flutter portfolio app
 
 A new Flutter project.
 
 ## Getting Started
+
+# medium blog tutorial https://mercyjemosop.medium.com/list-view-class-f307e6c0d8e
 
 This project is a starting point for a Flutter application.
 
