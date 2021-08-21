@@ -19,6 +19,7 @@ class _MyBlogState extends State<MyBlog> {
     getMediumData();
   }
 
+  late bool isLoading = false;
   late String searchTerm;
   late String title;
   //List<MediumWidget> todoWidgets = [];
@@ -33,6 +34,7 @@ class _MyBlogState extends State<MyBlog> {
     mediumData = await apiProvider.getBlogs();
     title = mediumData['feed']['title'];
     imageUrl = mediumData['items'][0]['thumbnail'];
+    isLoading = true;
     print(imageUrl);
     setState(() {
       itemsList = mediumData['items'];
@@ -44,6 +46,13 @@ class _MyBlogState extends State<MyBlog> {
       : throw 'Could not launch $_url';
   @override
   Widget build(BuildContext context) {
+    if (!isLoading) {
+      return Center(
+        child: CircularProgressIndicator(
+          backgroundColor: Colors.lightBlueAccent,
+        ),
+      );
+    }
     return Scaffold(
       body: Container(
         child: Column(
@@ -81,49 +90,10 @@ class _MyBlogState extends State<MyBlog> {
                           onTap: () {
                             _launchURL(mediumData['items'][i]['link']);
                           },
-                          child: Card(
-                            margin: EdgeInsets.all(20.0),
-                            child: Container(
-                              padding: EdgeInsets.all(0.0),
-                              child: Stack(
-                                alignment: Alignment.bottomCenter,
-                                children: [
-                                  Image.network(
-                                    mediumData['items'][i]['thumbnail'],
-                                    height: 200,
-                                  ),
-                                  SizedBox(
-                                    height: 16,
-                                  ),
-                                  SizedBox(
-                                    width: 500,
-                                    height: 70,
-                                    child: Container(
-                                      padding: EdgeInsets.all(2.0),
-                                      color: Colors.grey[600],
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                            mediumData['items'][i]['title'],
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 20.0,
-                                            ),
-                                          ),
-                                          Text(
-                                            mediumData['items'][i]['author'],
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 10.0,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                          child: ListViewItems(
+                            author: mediumData['items'][i]['author'],
+                            imageUrl: mediumData['items'][i]['thumbnail'],
+                            title: mediumData['items'][i]['title'],
                           ),
                         );
                       } else if (mediumData['items'][i]['title']
@@ -133,55 +103,72 @@ class _MyBlogState extends State<MyBlog> {
                           onTap: () {
                             launch(mediumData['items'][i]['link']);
                           },
-                          child: Card(
-                            margin: EdgeInsets.all(20.0),
-                            child: Container(
-                              padding: EdgeInsets.all(0.0),
-                              child: Stack(
-                                alignment: Alignment.bottomCenter,
-                                children: [
-                                  Image.network(
-                                    mediumData['items'][i]['thumbnail'],
-                                    height: 200,
-                                  ),
-                                  SizedBox(
-                                    height: 16,
-                                  ),
-                                  SizedBox(
-                                    width: 500,
-                                    height: 70,
-                                    child: Container(
-                                      padding: EdgeInsets.all(2.0),
-                                      color: Colors.grey[600],
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                            mediumData['items'][i]['title'],
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 20.0,
-                                            ),
-                                          ),
-                                          Text(
-                                            mediumData['items'][i]['author'],
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 10.0,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                          child: ListViewItems(
+                            author: mediumData['items'][i]['author'],
+                            imageUrl: mediumData['items'][i]['thumbnail'],
+                            title: mediumData['items'][i]['title'],
                           ),
                         );
                       } else {
                         return Container();
                       }
                     }),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ListViewItems extends StatelessWidget {
+  const ListViewItems(
+      {required this.imageUrl, required this.author, required this.title});
+
+  final String imageUrl;
+  final String author;
+  final String title;
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.all(20.0),
+      child: Container(
+        padding: EdgeInsets.all(0.0),
+        child: Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            Image.network(
+              imageUrl,
+              height: 200,
+            ),
+            SizedBox(
+              height: 16,
+            ),
+            SizedBox(
+              width: 500,
+              height: 70,
+              child: Container(
+                padding: EdgeInsets.all(2.0),
+                color: Colors.grey[600],
+                child: Column(
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20.0,
+                      ),
+                    ),
+                    Text(
+                      author,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10.0,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
